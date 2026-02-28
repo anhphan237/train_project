@@ -57,6 +57,11 @@ public class Main {
     // 3) Two Sum
     // ==========================================================
     // Time: O(n^2) | Space: O(1)
+    // ==========================================================
+    // Example Input:  nums = [3,4,5,6], target = 7
+    //
+    // Output: [0,1]
+    // ==========================================================
     public int[] twoSumBrute(int[] nums, int target) {
         for (int i = 0; i < nums.length; i++) {
             for (int j = i + 1; j < nums.length; j++) {
@@ -423,6 +428,11 @@ public class Main {
     // 12) Best Time to Buy and Sell Stock
     // ==========================================================
     // Time: O(n^2) | Space: O(1)
+    // ==========================================================
+    // Input: prices = [10,1,5,6,7,1]
+    //
+    // Output: 6
+    // ==========================================================
     public int maxProfitBrute(int[] prices) {
         int best = 0;
         for (int i = 0; i < prices.length; i++) {
