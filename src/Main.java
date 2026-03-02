@@ -356,6 +356,11 @@ public class Main {
     // 10) 3Sum
     // ==========================================================
     // Time: O(n^3) | Space: O(1) (không tính output)
+    // ==========================================================
+    // Input: nums = [-1,0,1,2,-1,-4]
+    //
+    // Output: [[-1,-1,2],[-1,0,1]]
+    // ==========================================================
     public List<List<Integer>> threeSumBrute(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         Set<String> seen = new HashSet<>();
