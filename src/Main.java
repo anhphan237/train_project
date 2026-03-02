@@ -3238,6 +3238,193 @@ public class Main {
         }
         return best;
     }
+
+    // ==========================================================
+    // 1) Koko Eating Bananas
+    // ==========================================================
+    // Brute Force:
+    // Time: O((maxPile) * n) | Space: O(1)
+    public int minEatingSpeedBrute(int[] piles, int h) {
+        int max = 0;
+        for (int p : piles) max = Math.max(max, p);
+
+        for (int k = 1; k <= max; k++) {
+            if (canEatAll(piles, h, k)) return k;
+        }
+        return max;
+    }
+
+    private boolean canEatAll(int[] piles, int h, int k) {
+        long hours = 0;
+        for (int p : piles) {
+            // ceil(p / k)
+            hours += (p + k - 1) / k;
+            if (hours > h) return false;
+        }
+        return hours <= h;
+    }
+
+    // Optimal (Binary Search on Answer):
+    // Time: O(n log maxPile) | Space: O(1)
+    public int minEatingSpeed(int[] piles, int h) {
+        int max = 0;
+        for (int p : piles) max = Math.max(max, p);
+
+        int l = 1, r = max;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (canEatAll(piles, h, mid)) {
+                r = mid; // try smaller speed
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+    }
+
+    // ==========================================================
+    // 2) Capacity To Ship Packages Within D Days
+    // ==========================================================
+    // Brute Force:
+    // Time: O((sum - maxW) * n) ~ O(sum*n) | Space: O(1)
+    public int shipWithinDaysBrute(int[] weights, int days) {
+        int maxW = 0;
+        int sum = 0;
+        for (int w : weights) {
+            maxW = Math.max(maxW, w);
+            sum += w;
+        }
+
+        for (int cap = maxW; cap <= sum; cap++) {
+            if (canShip(weights, days, cap)) return cap;
+        }
+        return sum;
+    }
+
+    private boolean canShip(int[] weights, int days, int cap) {
+        int usedDays = 1;
+        int cur = 0;
+
+        for (int w : weights) {
+            if (cur + w <= cap) {
+                cur += w;
+            } else {
+                usedDays++;
+                cur = w;
+                if (usedDays > days) return false;
+            }
+        }
+        return true;
+    }
+
+    // Optimal (Binary Search on Answer):
+    // Time: O(n log sum) | Space: O(1)
+    public int shipWithinDays(int[] weights, int days) {
+        int maxW = 0;
+        int sum = 0;
+        for (int w : weights) {
+            maxW = Math.max(maxW, w);
+            sum += w;
+        }
+
+        int l = maxW, r = sum;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (canShip(weights, days, mid)) {
+                r = mid; // try smaller capacity
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+    }
+
+    // ==========================================================
+    // 3) First Bad Version
+    // ==========================================================
+    // NOTE: LeetCode provides isBadVersion(version).
+    // We'll implement a stub for compilation/testing.
+    private int firstBad = 1;
+
+    private boolean isBadVersion(int version) {
+        return version >= firstBad;
+    }
+
+    // Brute Force:
+    // Time: O(n) | Space: O(1)
+    public int firstBadVersionBrute(int n) {
+        for (int v = 1; v <= n; v++) {
+            if (isBadVersion(v)) return v;
+        }
+        return -1;
+    }
+
+    // Optimal (Binary Search - leftmost true):
+    // Time: O(log n) | Space: O(1)
+    public int firstBadVersion(int n) {
+        int l = 1, r = n;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (isBadVersion(mid)) {
+                r = mid;      // mid is bad, answer in [l..mid]
+            } else {
+                l = mid + 1;  // mid is good, answer in [mid+1..r]
+            }
+        }
+        return l;
+    }
+
+    // ==========================================================
+    // 4) Find First and Last Position of Element in Sorted Array
+    // ==========================================================
+    // Brute Force:
+    // Time: O(n) | Space: O(1)
+    public int[] searchRangeBrute(int[] nums, int target) {
+        int first = -1, last = -1;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == target) {
+                if (first == -1) first = i;
+                last = i;
+            }
+        }
+        return new int[]{first, last};
+    }
+
+    // Optimal (Two binary searches for boundaries):
+    // Time: O(log n) | Space: O(1)
+    public int[] searchRange(int[] nums, int target) {
+        int left = lowerBound(nums, target);      // first index >= target
+        if (left == nums.length || nums[left] != target) return new int[]{-1, -1};
+        int right = upperBound(nums, target) - 1; // last index <= target
+        return new int[]{left, right};
+    }
+
+    // first index i such that nums[i] >= target
+    private int lowerBound(int[] nums, int target) {
+        int l = 0, r = nums.length; // [l, r)
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (nums[mid] >= target) r = mid;
+            else l = mid + 1;
+        }
+        return l;
+    }
+
+    // first index i such that nums[i] > target
+    private int upperBound(int[] nums, int target) {
+        int l = 0, r = nums.length; // [l, r)
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (nums[mid] > target) r = mid;
+            else l = mid + 1;
+        }
+        return l;
+    }
+
+    // Optional helper to set bad version for local test
+    public void setFirstBad(int firstBad) {
+        this.firstBad = firstBad;
+    }
 }
 
 
