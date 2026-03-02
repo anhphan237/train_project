@@ -236,6 +236,12 @@ public class Main {
         return ans;
     }
 
+    // ==========================================================
+    // Example:
+    //
+    // Input: nums = [1,2,4,6]
+    // Output: [48,24,12,8]
+    // ==========================================================
     // Time: O(n) | Space: O(1) (không tính output)
     public int[] productExceptSelf(int[] nums) {
         int n = nums.length;
@@ -2610,6 +2616,11 @@ public class Main {
     // 61) Maximum Subarray
     // ==========================================================
     // Time: O(n^2) | Space: O(1)
+    // ==========================================================
+    // Input: nums = [2,-3,4,-2,2,1,-1,4]
+    //
+    // Output: 8
+    // ==========================================================
     public int maxSubArrayBrute(int[] nums) {
         int best = Integer.MIN_VALUE;
         for (int i = 0; i < nums.length; i++) {
