@@ -3197,6 +3197,47 @@ public class Main {
         }
         return count;
     }
+
+    // ==========================================================
+    // Max Consecutive Ones III (Brute Force)
+    // ==========================================================
+    // Time: O(n^2) | Space: O(1)
+    public int longestOnesBrute(int[] nums, int k) {
+        int n = nums.length;
+        int best = 0;
+
+        for (int i = 0; i < n; i++) {
+            int zeros = 0;
+            for (int j = i; j < n; j++) {
+                if (nums[j] == 0) zeros++;
+                if (zeros > k) break; // cannot extend further
+                best = Math.max(best, j - i + 1);
+            }
+        }
+        return best;
+    }
+
+    // ==========================================================
+    // Max Consecutive Ones III (Optimal - Sliding Window)
+    // ==========================================================
+    // Time: O(n) | Space: O(1)
+    public int longestOnes(int[] nums, int k) {
+        int l = 0;
+        int zeros = 0;
+        int best = 0;
+
+        for (int r = 0; r < nums.length; r++) {
+            if (nums[r] == 0) zeros++;
+
+            // shrink until window has at most k zeros
+            while (zeros > k) {
+                if (nums[l] == 0) zeros--;
+                l++;
+            }
+            best = Math.max(best, r - l + 1);
+        }
+        return best;
+    }
 }
 
 
