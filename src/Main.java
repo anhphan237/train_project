@@ -3156,6 +3156,47 @@ public class Main {
         }
         return a;
     }
+
+    // ==========================================================
+    // Subarray Sum Equals K (Brute Force)
+    // ==========================================================
+    // Time: O(n^2) | Space: O(1)
+    public int subarraySumBrute(int[] nums, int k) {
+        int n = nums.length;
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j];
+                if (sum == k) count++;
+            }
+        }
+        return count;
+    }
+
+    // ==========================================================
+    // Subarray Sum Equals K (Optimal - Prefix Sum + HashMap)
+    // ==========================================================
+    // Time: O(n) | Space: O(n)
+    public int subarraySum(int[] nums, int k) {
+        // map[prefixSum] = number of times this prefixSum has appeared so far
+        Map<Integer, Integer> freq = new HashMap<>();
+        freq.put(0, 1); // empty prefix
+
+        int prefix = 0;
+        int count = 0;
+
+        for (int x : nums) {
+            prefix += x;
+
+            // If prefix - k existed before, then there are that many subarrays ending here with sum k
+            count += freq.getOrDefault(prefix - k, 0);
+
+            // Add current prefix AFTER counting
+            freq.put(prefix, freq.getOrDefault(prefix, 0) + 1);
+        }
+        return count;
+    }
 }
 
 
