@@ -784,32 +784,19 @@ public class Main {
     }
 
     // ==========================================================
-    // Common Data Structures
-    // ==========================================================
-    public static class ListNode {
-        int val;
-        ListNode next;
-        ListNode() {}
-        ListNode(int v) { val = v; }
-        ListNode(int v, ListNode n) { val = v; next = n; }
-    }
-
-    static class TreeNode {
-        int val;
-        TreeNode left, right;
-        TreeNode() {}
-        TreeNode(int v) { val = v; }
-        TreeNode(int v, TreeNode l, TreeNode r) { val = v; left = l; right = r; }
-    }
-
-    // ==========================================================
     // 20) Merge Two Sorted Lists
     // ==========================================================
     // Time: O(n + m) | Space: O(n + m)  (creates new list)
     public ListNode mergeTwoListsBrute(ListNode list1, ListNode list2) {
         List<Integer> vals = new ArrayList<>();
-        while (list1 != null) { vals.add(list1.val); list1 = list1.next; }
-        while (list2 != null) { vals.add(list2.val); list2 = list2.next; }
+        while (list1 != null) {
+            vals.add(list1.val);
+            list1 = list1.next;
+        }
+        while (list2 != null) {
+            vals.add(list2.val);
+            list2 = list2.next;
+        }
         Collections.sort(vals);
         ListNode dummy = new ListNode(0), cur = dummy;
         for (int v : vals) {
@@ -868,7 +855,10 @@ public class Main {
         if (head == null) return;
         List<ListNode> arr = new ArrayList<>();
         ListNode cur = head;
-        while (cur != null) { arr.add(cur); cur = cur.next; }
+        while (cur != null) {
+            arr.add(cur);
+            cur = cur.next;
+        }
 
         int i = 0, j = arr.size() - 1;
         while (i < j) {
@@ -917,7 +907,10 @@ public class Main {
     public ListNode removeNthFromEndBrute(ListNode head, int n) {
         List<ListNode> nodes = new ArrayList<>();
         ListNode cur = head;
-        while (cur != null) { nodes.add(cur); cur = cur.next; }
+        while (cur != null) {
+            nodes.add(cur);
+            cur = cur.next;
+        }
         int idx = nodes.size() - n; // remove this index
 
         if (idx == 0) return head.next; // remove head
@@ -946,7 +939,10 @@ public class Main {
     public ListNode mergeKListsBrute(ListNode[] lists) {
         List<Integer> vals = new ArrayList<>();
         for (ListNode head : lists) {
-            while (head != null) { vals.add(head.val); head = head.next; }
+            while (head != null) {
+                vals.add(head.val);
+                head = head.next;
+            }
         }
         Collections.sort(vals);
         ListNode dummy = new ListNode(0), cur = dummy;
@@ -1247,7 +1243,7 @@ public class Main {
     // Time: O(n^2) worst-case | Space: O(h)
     public int maxPathSumBrute(TreeNode root) {
         if (root == null) return 0;
-        int[] ans = new int[] { Integer.MIN_VALUE };
+        int[] ans = new int[]{Integer.MIN_VALUE};
         collectNodes(root, new ArrayList<>(), ans);
         return ans[0];
     }
@@ -1278,7 +1274,7 @@ public class Main {
 
     // Time: O(n) | Space: O(h)
     public int maxPathSum(TreeNode root) {
-        int[] best = new int[] { Integer.MIN_VALUE };
+        int[] best = new int[]{Integer.MIN_VALUE};
         maxGain(root, best);
         return best[0];
     }
@@ -1289,143 +1285,6 @@ public class Main {
         int right = Math.max(0, maxGain(node.right, best));
         best[0] = Math.max(best[0], node.val + left + right);
         return node.val + Math.max(left, right);
-    }
-
-    // ==========================================================
-    // 35) Serialize And Deserialize Binary Tree
-    // ==========================================================
-    // Brute: level-order (BFS) serialization
-    // Time: O(n) | Space: O(n)
-    static class CodecBrute {
-        public String serialize(TreeNode root) {
-            if (root == null) return "";
-            StringBuilder sb = new StringBuilder();
-            Queue<TreeNode> q = new ArrayDeque<>();
-            q.offer(root);
-            while (!q.isEmpty()) {
-                TreeNode node = q.poll();
-                if (node == null) {
-                    sb.append("#,");
-                    continue;
-                }
-                sb.append(node.val).append(",");
-                q.offer(node.left);
-                q.offer(node.right);
-            }
-            return sb.toString();
-        }
-
-        public TreeNode deserialize(String data) {
-            if (data == null || data.isEmpty()) return null;
-            String[] parts = data.split(",");
-            int i = 0;
-            if (parts[i].equals("#")) return null;
-
-            TreeNode root = new TreeNode(Integer.parseInt(parts[i++]));
-            Queue<TreeNode> q = new ArrayDeque<>();
-            q.offer(root);
-
-            while (!q.isEmpty() && i < parts.length) {
-                TreeNode cur = q.poll();
-
-                // left
-                if (i < parts.length && !parts[i].equals("#") && !parts[i].isEmpty()) {
-                    cur.left = new TreeNode(Integer.parseInt(parts[i]));
-                    q.offer(cur.left);
-                }
-                i++;
-
-                // right
-                if (i < parts.length && !parts[i].equals("#") && !parts[i].isEmpty()) {
-                    cur.right = new TreeNode(Integer.parseInt(parts[i]));
-                    q.offer(cur.right);
-                }
-                i++;
-            }
-            return root;
-        }
-    }
-
-    // Optimized: preorder DFS with null markers (simple + compact)
-    // Time: O(n) | Space: O(n)
-    static class Codec {
-        public String serialize(TreeNode root) {
-            StringBuilder sb = new StringBuilder();
-            ser(root, sb);
-            return sb.toString();
-        }
-
-        private void ser(TreeNode node, StringBuilder sb) {
-            if (node == null) {
-                sb.append("#,");
-                return;
-            }
-            sb.append(node.val).append(",");
-            ser(node.left, sb);
-            ser(node.right, sb);
-        }
-
-        public TreeNode deserialize(String data) {
-            if (data == null || data.isEmpty()) return null;
-            Deque<String> q = new ArrayDeque<>(Arrays.asList(data.split(",")));
-            return deser(q);
-        }
-
-        private TreeNode deser(Deque<String> q) {
-            if (q.isEmpty()) return null;
-            String s = q.pollFirst();
-            if (s.equals("#") || s.isEmpty()) return null;
-            TreeNode node = new TreeNode(Integer.parseInt(s));
-            node.left = deser(q);
-            node.right = deser(q);
-            return node;
-        }
-    }
-
-    // ==========================================================
-    // 36) Find Median From Data Stream
-    // ==========================================================
-    // Brute: keep sorted list
-    static class MedianFinderBrute {
-        private final List<Integer> arr = new ArrayList<>();
-
-        // addNum: Time: O(n) (insert) | Space: O(n)
-        public void addNum(int num) {
-            int idx = Collections.binarySearch(arr, num);
-            if (idx < 0) idx = -idx - 1;
-            arr.add(idx, num);
-        }
-
-        // findMedian: Time: O(1) | Space: O(1)
-        public double findMedian() {
-            int n = arr.size();
-            if (n % 2 == 1) return arr.get(n / 2);
-            return (arr.get(n / 2 - 1) + arr.get(n / 2)) / 2.0;
-        }
-    }
-
-    // Optimized: two heaps
-    static class MedianFinder {
-        // max-heap for lower half
-        private final PriorityQueue<Integer> left = new PriorityQueue<>(Collections.reverseOrder());
-        // min-heap for upper half
-        private final PriorityQueue<Integer> right = new PriorityQueue<>();
-
-        // Time: O(log n) | Space: O(n)
-        public void addNum(int num) {
-            if (left.isEmpty() || num <= left.peek()) left.offer(num);
-            else right.offer(num);
-
-            // balance sizes
-            if (left.size() > right.size() + 1) right.offer(left.poll());
-            else if (right.size() > left.size()) left.offer(right.poll());
-        }
-
-        // Time: O(1) | Space: O(1)
-        public double findMedian() {
-            if (left.size() > right.size()) return left.peek();
-            return (left.peek() + right.peek()) / 2.0;
-        }
     }
 
     // ==========================================================
@@ -1534,149 +1393,6 @@ public class Main {
         return ok;
     }
 
-    // ==========================================================
-    // 39) Implement Trie Prefix Tree
-    // ==========================================================
-    // Brute: store all words, startsWith scans all
-    // insert: O(1) avg | search: O(1) avg | startsWith: O(totalWords * prefixLen)
-    static class TrieBrute {
-        private final Set<String> words = new HashSet<>();
-
-        public void insert(String word) {
-            words.add(word);
-        }
-
-        public boolean search(String word) {
-            return words.contains(word);
-        }
-
-        public boolean startsWith(String prefix) {
-            for (String w : words) {
-                if (w.startsWith(prefix)) return true;
-            }
-            return false;
-        }
-    }
-
-    // Optimized Trie
-    static class Trie {
-        static class Node {
-            Node[] next = new Node[26];
-            boolean end;
-        }
-
-        private final Node root = new Node();
-
-        // Time: O(L) | Space: O(L) new nodes worst-case
-        public void insert(String word) {
-            Node cur = root;
-            for (int i = 0; i < word.length(); i++) {
-                int idx = word.charAt(i) - 'a';
-                if (cur.next[idx] == null) cur.next[idx] = new Node();
-                cur = cur.next[idx];
-            }
-            cur.end = true;
-        }
-
-        // Time: O(L) | Space: O(1)
-        public boolean search(String word) {
-            Node node = walk(word);
-            return node != null && node.end;
-        }
-
-        // Time: O(L) | Space: O(1)
-        public boolean startsWith(String prefix) {
-            return walk(prefix) != null;
-        }
-
-        private Node walk(String s) {
-            Node cur = root;
-            for (int i = 0; i < s.length(); i++) {
-                int idx = s.charAt(i) - 'a';
-                if (idx < 0 || idx >= 26) return null; // basic guard
-                if (cur.next[idx] == null) return null;
-                cur = cur.next[idx];
-            }
-            return cur;
-        }
-    }
-
-    // ==========================================================
-    // 40) Design Add and Search Words Data Structure
-    // ==========================================================
-
-    // Brute: store list; search by checking each word with pattern
-    static class WordDictionaryBrute {
-        private final List<String> words = new ArrayList<>();
-
-        // Time: O(1) | Space: O(1) extra
-        public void addWord(String word) {
-            words.add(word);
-        }
-
-        // Time: O(N * L) | Space: O(1)
-        public boolean searchBrute(String pattern) {
-            for (String w : words) {
-                if (w.length() != pattern.length()) continue;
-                if (match(pattern, w)) return true;
-            }
-            return false;
-        }
-
-        private boolean match(String p, String w) {
-            for (int i = 0; i < p.length(); i++) {
-                char pc = p.charAt(i);
-                if (pc != '.' && pc != w.charAt(i)) return false;
-            }
-            return true;
-        }
-    }
-
-    // Optimized: Trie + DFS for '.'
-    static class WordDictionary {
-        static class TrieNode {
-            TrieNode[] next = new TrieNode[26];
-            boolean end;
-        }
-
-        private final TrieNode root = new TrieNode();
-
-        // Time: O(L) | Space: O(L) new nodes
-        public void addWord(String word) {
-            TrieNode cur = root;
-            for (int i = 0; i < word.length(); i++) {
-                int idx = word.charAt(i) - 'a';
-                if (cur.next[idx] == null) cur.next[idx] = new TrieNode();
-                cur = cur.next[idx];
-            }
-            cur.end = true;
-        }
-
-        // Time: worst O(26^L) (with lots of '.') | Space: O(L) recursion
-        public boolean search(String word) {
-            return dfs(word, 0, root);
-        }
-
-        private boolean dfs(String w, int i, TrieNode node) {
-            if (node == null) return false;
-            if (i == w.length()) return node.end;
-
-            char c = w.charAt(i);
-            if (c == '.') {
-                for (int k = 0; k < 26; k++) {
-                    if (node.next[k] != null && dfs(w, i + 1, node.next[k])) return true;
-                }
-                return false;
-            } else {
-                return dfs(w, i + 1, node.next[c - 'a']);
-            }
-        }
-    }
-
-    // ==========================================================
-    // 41) Word Search II
-    // ==========================================================
-
     // Time: O(M*N*4^L) per word worst | Space: O(L)
     public List<String> findWordsBrute(char[][] board, String[] words) {
         List<String> res = new ArrayList<>();
@@ -1708,12 +1424,6 @@ public class Main {
                 || dfsWord(b, vis, r, c - 1, w, i + 1);
         vis[r][c] = false;
         return ok;
-    }
-
-    // Optimized: Trie + one DFS over board
-    static class WS2TrieNode {
-        WS2TrieNode[] next = new WS2TrieNode[26];
-        String word; // store full word at terminal
     }
 
     // Time: ~O(M*N*4^Lmax) but pruned heavily by trie | Space: O(total chars + recursion)
@@ -1765,10 +1475,6 @@ public class Main {
         b[r][c] = ch;
     }
 
-    // ==========================================================
-    // 42) Number of Islands
-    // ==========================================================
-
     // Brute-ish: BFS/DFS flood fill (standard)
     // Time: O(M*N) | Space: O(M*N) worst
     public int numIslandsBrute(char[][] grid) {
@@ -1808,6 +1514,10 @@ public class Main {
         }
     }
 
+    // ==========================================================
+    // 40) Design Add and Search Words Data Structure
+    // ==========================================================
+
     // Optimized: Union-Find (also O(M*N), good for interview variety)
     // Time: O(M*N * α(MN)) | Space: O(M*N)
     public int numIslands(char[][] grid) {
@@ -1839,50 +1549,6 @@ public class Main {
         return lands;
     }
 
-    static class DSU {
-        int[] parent, rank;
-        boolean[] blocked;
-
-        DSU(int n) {
-            parent = new int[n];
-            rank = new int[n];
-            blocked = new boolean[n];
-            for (int i = 0; i < n; i++) parent[i] = i;
-        }
-
-        void block(int x) { blocked[x] = true; }
-
-        int find(int x) {
-            while (parent[x] != x) {
-                parent[x] = parent[parent[x]];
-                x = parent[x];
-            }
-            return x;
-        }
-
-        boolean union(int a, int b) {
-            if (blocked[a] || blocked[b]) return false;
-            int ra = find(a), rb = find(b);
-            if (ra == rb) return false;
-            if (rank[ra] < rank[rb]) parent[ra] = rb;
-            else if (rank[ra] > rank[rb]) parent[rb] = ra;
-            else { parent[rb] = ra; rank[ra]++; }
-            return true;
-        }
-    }
-
-    // ==========================================================
-    // 43) Clone Graph
-    // ==========================================================
-
-    static class Node {
-        public int val;
-        public List<Node> neighbors;
-        public Node() { val = 0; neighbors = new ArrayList<>(); }
-        public Node(int _val) { val = _val; neighbors = new ArrayList<>(); }
-        public Node(int _val, ArrayList<Node> _neighbors) { val = _val; neighbors = _neighbors; }
-    }
-
     // Brute-ish: BFS clone (standard) using map
     // Time: O(V+E) | Space: O(V)
     public Node cloneGraphBrute(Node node) {
@@ -1905,6 +1571,10 @@ public class Main {
         return map.get(node);
     }
 
+    // ==========================================================
+    // 41) Word Search II
+    // ==========================================================
+
     // Optimized: DFS clone (same big-O, different style)
     // Time: O(V+E) | Space: O(V) (map + recursion)
     public Node cloneGraph(Node node) {
@@ -1921,10 +1591,6 @@ public class Main {
         }
         return copy;
     }
-
-    // ==========================================================
-    // 44) Pacific Atlantic Water Flow
-    // ==========================================================
 
     // Brute: for each cell, DFS to check reach both oceans
     // Time: O(M*N*(M*N)) worst | Space: O(M*N)
@@ -2018,7 +1684,7 @@ public class Main {
     }
 
     // ==========================================================
-    // 45) Course Schedule
+    // 42) Number of Islands
     // ==========================================================
 
     // Brute-ish: DFS cycle detection
@@ -2071,10 +1737,6 @@ public class Main {
         return taken == numCourses;
     }
 
-    // ==========================================================
-    // 46) Graph Valid Tree
-    // ==========================================================
-
     // Brute-ish: DFS cycle + connectivity
     // Time: O(V+E) | Space: O(V+E)
     public boolean validTreeBrute(int n, int[][] edges) {
@@ -2091,6 +1753,10 @@ public class Main {
         for (boolean b : vis) if (!b) return false; // not connected
         return true;
     }
+
+    // ==========================================================
+    // 43) Clone Graph
+    // ==========================================================
 
     private boolean dfsTree(int u, int parent, List<List<Integer>> g, boolean[] vis) {
         vis[u] = true;
@@ -2112,24 +1778,6 @@ public class Main {
         }
         return true;
     }
-
-    static class UF {
-        int[] p, r;
-        UF(int n) { p = new int[n]; r = new int[n]; for (int i = 0; i < n; i++) p[i] = i; }
-        int find(int x) { while (p[x] != x) { p[x] = p[p[x]]; x = p[x]; } return x; }
-        boolean union(int a, int b) {
-            int ra = find(a), rb = find(b);
-            if (ra == rb) return false;
-            if (r[ra] < r[rb]) p[ra] = rb;
-            else if (r[ra] > r[rb]) p[rb] = ra;
-            else { p[rb] = ra; r[ra]++; }
-            return true;
-        }
-    }
-
-    // ==========================================================
-    // 47) Number of Connected Components in an Undirected Graph
-    // ==========================================================
 
     // Brute-ish: DFS count
     // Time: O(V+E) | Space: O(V+E)
@@ -2175,7 +1823,7 @@ public class Main {
     }
 
     // ==========================================================
-    // 48) Alien Dictionary
+    // 44) Pacific Atlantic Water Flow
     // ==========================================================
 
     // Brute: compare all pairs of words to add constraints (heavier)
@@ -2183,10 +1831,11 @@ public class Main {
     public String alienOrderBrute(String[] words) {
         Map<Character, Set<Character>> g = new HashMap<>();
         Map<Character, Integer> indeg = new HashMap<>();
-        for (String w : words) for (char ch : w.toCharArray()) {
-            g.putIfAbsent(ch, new HashSet<>());
-            indeg.putIfAbsent(ch, 0);
-        }
+        for (String w : words)
+            for (char ch : w.toCharArray()) {
+                g.putIfAbsent(ch, new HashSet<>());
+                indeg.putIfAbsent(ch, 0);
+            }
 
         int n = words.length;
         for (int i = 0; i < n; i++) {
@@ -2202,10 +1851,11 @@ public class Main {
     public String alienOrder(String[] words) {
         Map<Character, Set<Character>> g = new HashMap<>();
         Map<Character, Integer> indeg = new HashMap<>();
-        for (String w : words) for (char ch : w.toCharArray()) {
-            g.putIfAbsent(ch, new HashSet<>());
-            indeg.putIfAbsent(ch, 0);
-        }
+        for (String w : words)
+            for (char ch : w.toCharArray()) {
+                g.putIfAbsent(ch, new HashSet<>());
+                indeg.putIfAbsent(ch, 0);
+            }
 
         for (int i = 0; i < words.length - 1; i++) {
             if (!addEdge(words[i], words[i + 1], g, indeg)) return "";
@@ -2247,7 +1897,7 @@ public class Main {
     }
 
     // ==========================================================
-    // 49) Climbing Stairs
+    // 45) Course Schedule
     // ==========================================================
 
     // Time: O(2^N) | Space: O(N)
@@ -2274,7 +1924,7 @@ public class Main {
     }
 
     // ==========================================================
-    // 50) House Robber
+    // 46) Graph Valid Tree
     // ==========================================================
 
     // Time: O(2^N) | Space: O(N)
@@ -2300,10 +1950,6 @@ public class Main {
         return prev1;
     }
 
-    // ==========================================================
-    // 51) House Robber II
-    // ==========================================================
-
     // Time: O(2^N) | Space: O(N)
     public int rob2Brute(int[] nums) {
         if (nums.length == 1) return nums[0];
@@ -2311,6 +1957,10 @@ public class Main {
         return Math.max(robRangeRec(nums, 0, nums.length - 2, 0),
                 robRangeRec(nums, 1, nums.length - 1, 0));
     }
+
+    // ==========================================================
+    // 47) Number of Connected Components in an Undirected Graph
+    // ==========================================================
 
     private int robRangeRec(int[] nums, int l, int r, int i) {
         int idx = l + i;
@@ -2326,6 +1976,10 @@ public class Main {
                 robLinear(nums, 1, nums.length - 1));
     }
 
+    // ==========================================================
+    // 48) Alien Dictionary
+    // ==========================================================
+
     private int robLinear(int[] nums, int l, int r) {
         int prev2 = 0, prev1 = 0;
         for (int i = l; i <= r; i++) {
@@ -2336,10 +1990,6 @@ public class Main {
         return prev1;
     }
 
-    // ==========================================================
-    // 52) Longest Palindromic Substring
-    // ==========================================================
-
     // Time: O(N^3) | Space: O(1)
     public String longestPalindromeBrute(String s) {
         int n = s.length();
@@ -2347,7 +1997,8 @@ public class Main {
         for (int i = 0; i < n; i++) {
             for (int j = i; j < n; j++) {
                 if (j - i > bestR - bestL && isPal(s, i, j)) {
-                    bestL = i; bestR = j;
+                    bestL = i;
+                    bestR = j;
                 }
             }
         }
@@ -2371,22 +2022,24 @@ public class Main {
             int[] even = expand(s, i, i + 1);
             int[] cur = (odd[1] - odd[0] >= even[1] - even[0]) ? odd : even;
             if (cur[1] - cur[0] > bestR - bestL) {
-                bestL = cur[0]; bestR = cur[1];
+                bestL = cur[0];
+                bestR = cur[1];
             }
         }
         return s.substring(bestL, bestR + 1);
     }
 
+    // ==========================================================
+    // 49) Climbing Stairs
+    // ==========================================================
+
     private int[] expand(String s, int l, int r) {
         while (l >= 0 && r < s.length() && s.charAt(l) == s.charAt(r)) {
-            l--; r++;
+            l--;
+            r++;
         }
         return new int[]{l + 1, r - 1};
     }
-
-    // ==========================================================
-    // 53) Palindromic Substrings
-    // ==========================================================
 
     // Time: O(N^3) | Space: O(1)
     public int countSubstringsBrute(String s) {
@@ -2411,18 +2064,19 @@ public class Main {
         return cnt;
     }
 
+    // ==========================================================
+    // 50) House Robber
+    // ==========================================================
+
     private int countExpand(String s, int l, int r) {
         int cnt = 0;
         while (l >= 0 && r < s.length() && s.charAt(l) == s.charAt(r)) {
             cnt++;
-            l--; r++;
+            l--;
+            r++;
         }
         return cnt;
     }
-
-    // ==========================================================
-    // 54) Decode Ways
-    // ==========================================================
 
     // Time: O(2^N) | Space: O(N)
     public int numDecodingsBrute(String s) {
@@ -2440,6 +2094,10 @@ public class Main {
         }
         return ways;
     }
+
+    // ==========================================================
+    // 51) House Robber II
+    // ==========================================================
 
     // Time: O(N) | Space: O(1)
     public int numDecodings(String s) {
@@ -2464,10 +2122,6 @@ public class Main {
         }
         return dp1;
     }
-
-    // ==========================================================
-    // 55) Coin Change
-    // ==========================================================
 
     // Brute: try all combinations (DFS)
     // Time: exponential | Space: O(amount)
@@ -2502,7 +2156,7 @@ public class Main {
     }
 
     // ==========================================================
-    // 56) Maximum Product Subarray
+    // 52) Longest Palindromic Substring
     // ==========================================================
 
     // Time: O(N^2) | Space: O(1)
@@ -2523,17 +2177,17 @@ public class Main {
         int curMax = nums[0], curMin = nums[0], ans = nums[0];
         for (int i = 1; i < nums.length; i++) {
             int x = nums[i];
-            if (x < 0) { int t = curMax; curMax = curMin; curMin = t; }
+            if (x < 0) {
+                int t = curMax;
+                curMax = curMin;
+                curMin = t;
+            }
             curMax = Math.max(x, curMax * x);
             curMin = Math.min(x, curMin * x);
             ans = Math.max(ans, curMax);
         }
         return ans;
     }
-
-    // ==========================================================
-    // 57) Word Break
-    // ==========================================================
 
     // Brute: recursion try all splits
     // Time: exponential | Space: O(N) recursion
@@ -2549,6 +2203,10 @@ public class Main {
         }
         return false;
     }
+
+    // ==========================================================
+    // 53) Palindromic Substrings
+    // ==========================================================
 
     // Optimized: DP
     // Time: O(N^2) | Space: O(N)
@@ -2567,10 +2225,6 @@ public class Main {
         }
         return dp[s.length()];
     }
-
-    // ==========================================================
-    // 58) Longest Increasing Subsequence
-    // ==========================================================
 
     // Time: O(N^2) | Space: O(N)
     public int lengthOfLISBrute(int[] nums) {
@@ -2608,7 +2262,7 @@ public class Main {
     }
 
     // ==========================================================
-    // 59) Unique Paths
+    // 54) Decode Ways
     // ==========================================================
 
     // Brute: recursion
@@ -2635,6 +2289,10 @@ public class Main {
         }
         return dp[n - 1];
     }
+
+    // ==========================================================
+    // 55) Coin Change
+    // ==========================================================
 
     // ==========================================================
     // 60) Longest Common Subsequence
@@ -2664,6 +2322,10 @@ public class Main {
         }
         return dp[m][n];
     }
+
+    // ==========================================================
+    // 56) Maximum Product Subarray
+    // ==========================================================
 
     // ==========================================================
     // 61) Maximum Subarray
@@ -2697,6 +2359,10 @@ public class Main {
     }
 
     // ==========================================================
+    // 57) Word Break
+    // ==========================================================
+
+    // ==========================================================
     // 62) Jump Game
     // ==========================================================
     // Time: O(2^n) worst | Space: O(n) recursion stack
@@ -2723,6 +2389,10 @@ public class Main {
         }
         return true;
     }
+
+    // ==========================================================
+    // 58) Longest Increasing Subsequence
+    // ==========================================================
 
     // ==========================================================
     // 63) Insert Interval
@@ -2777,6 +2447,10 @@ public class Main {
 
         return res.toArray(new int[res.size()][]);
     }
+
+    // ==========================================================
+    // 59) Unique Paths
+    // ==========================================================
 
     // ==========================================================
     // 64) Merge Intervals
@@ -3396,13 +3070,6 @@ public class Main {
         return l;
     }
 
-    // ==========================================================
-    // 3) First Bad Version
-    // ==========================================================
-    // NOTE: LeetCode provides isBadVersion(version).
-    // We'll implement a stub for compilation/testing.
-    private int firstBad = 1;
-
     private boolean isBadVersion(int version) {
         return version >= firstBad;
     }
@@ -3481,6 +3148,409 @@ public class Main {
     // Optional helper to set bad version for local test
     public void setFirstBad(int firstBad) {
         this.firstBad = firstBad;
+    }
+
+    // ==========================================================
+    // Common Data Structures
+    // ==========================================================
+    public static class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode() {
+        }
+
+        ListNode(int v) {
+            val = v;
+        }
+
+        ListNode(int v, ListNode n) {
+            val = v;
+            next = n;
+        }
+    }
+
+    static class TreeNode {
+        int val;
+        TreeNode left, right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int v) {
+            val = v;
+        }
+
+        TreeNode(int v, TreeNode l, TreeNode r) {
+            val = v;
+            left = l;
+            right = r;
+        }
+    }
+
+    // ==========================================================
+    // 35) Serialize And Deserialize Binary Tree
+    // ==========================================================
+    // Brute: level-order (BFS) serialization
+    // Time: O(n) | Space: O(n)
+    static class CodecBrute {
+        public String serialize(TreeNode root) {
+            if (root == null) return "";
+            StringBuilder sb = new StringBuilder();
+            Queue<TreeNode> q = new ArrayDeque<>();
+            q.offer(root);
+            while (!q.isEmpty()) {
+                TreeNode node = q.poll();
+                if (node == null) {
+                    sb.append("#,");
+                    continue;
+                }
+                sb.append(node.val).append(",");
+                q.offer(node.left);
+                q.offer(node.right);
+            }
+            return sb.toString();
+        }
+
+        public TreeNode deserialize(String data) {
+            if (data == null || data.isEmpty()) return null;
+            String[] parts = data.split(",");
+            int i = 0;
+            if (parts[i].equals("#")) return null;
+
+            TreeNode root = new TreeNode(Integer.parseInt(parts[i++]));
+            Queue<TreeNode> q = new ArrayDeque<>();
+            q.offer(root);
+
+            while (!q.isEmpty() && i < parts.length) {
+                TreeNode cur = q.poll();
+
+                // left
+                if (i < parts.length && !parts[i].equals("#") && !parts[i].isEmpty()) {
+                    cur.left = new TreeNode(Integer.parseInt(parts[i]));
+                    q.offer(cur.left);
+                }
+                i++;
+
+                // right
+                if (i < parts.length && !parts[i].equals("#") && !parts[i].isEmpty()) {
+                    cur.right = new TreeNode(Integer.parseInt(parts[i]));
+                    q.offer(cur.right);
+                }
+                i++;
+            }
+            return root;
+        }
+    }
+
+    // Optimized: preorder DFS with null markers (simple + compact)
+    // Time: O(n) | Space: O(n)
+    static class Codec {
+        public String serialize(TreeNode root) {
+            StringBuilder sb = new StringBuilder();
+            ser(root, sb);
+            return sb.toString();
+        }
+
+        private void ser(TreeNode node, StringBuilder sb) {
+            if (node == null) {
+                sb.append("#,");
+                return;
+            }
+            sb.append(node.val).append(",");
+            ser(node.left, sb);
+            ser(node.right, sb);
+        }
+
+        public TreeNode deserialize(String data) {
+            if (data == null || data.isEmpty()) return null;
+            Deque<String> q = new ArrayDeque<>(Arrays.asList(data.split(",")));
+            return deser(q);
+        }
+
+        private TreeNode deser(Deque<String> q) {
+            if (q.isEmpty()) return null;
+            String s = q.pollFirst();
+            if (s.equals("#") || s.isEmpty()) return null;
+            TreeNode node = new TreeNode(Integer.parseInt(s));
+            node.left = deser(q);
+            node.right = deser(q);
+            return node;
+        }
+    }
+
+    // ==========================================================
+    // 36) Find Median From Data Stream
+    // ==========================================================
+    // Brute: keep sorted list
+    static class MedianFinderBrute {
+        private final List<Integer> arr = new ArrayList<>();
+
+        // addNum: Time: O(n) (insert) | Space: O(n)
+        public void addNum(int num) {
+            int idx = Collections.binarySearch(arr, num);
+            if (idx < 0) idx = -idx - 1;
+            arr.add(idx, num);
+        }
+
+        // findMedian: Time: O(1) | Space: O(1)
+        public double findMedian() {
+            int n = arr.size();
+            if (n % 2 == 1) return arr.get(n / 2);
+            return (arr.get(n / 2 - 1) + arr.get(n / 2)) / 2.0;
+        }
+    }
+
+    // Optimized: two heaps
+    static class MedianFinder {
+        // max-heap for lower half
+        private final PriorityQueue<Integer> left = new PriorityQueue<>(Collections.reverseOrder());
+        // min-heap for upper half
+        private final PriorityQueue<Integer> right = new PriorityQueue<>();
+
+        // Time: O(log n) | Space: O(n)
+        public void addNum(int num) {
+            if (left.isEmpty() || num <= left.peek()) left.offer(num);
+            else right.offer(num);
+
+            // balance sizes
+            if (left.size() > right.size() + 1) right.offer(left.poll());
+            else if (right.size() > left.size()) left.offer(right.poll());
+        }
+
+        // Time: O(1) | Space: O(1)
+        public double findMedian() {
+            if (left.size() > right.size()) return left.peek();
+            return (left.peek() + right.peek()) / 2.0;
+        }
+    }
+
+    // ==========================================================
+    // 39) Implement Trie Prefix Tree
+    // ==========================================================
+    // Brute: store all words, startsWith scans all
+    // insert: O(1) avg | search: O(1) avg | startsWith: O(totalWords * prefixLen)
+    static class TrieBrute {
+        private final Set<String> words = new HashSet<>();
+
+        public void insert(String word) {
+            words.add(word);
+        }
+
+        public boolean search(String word) {
+            return words.contains(word);
+        }
+
+        public boolean startsWith(String prefix) {
+            for (String w : words) {
+                if (w.startsWith(prefix)) return true;
+            }
+            return false;
+        }
+    }
+
+    // Optimized Trie
+    static class Trie {
+        private final Node root = new Node();
+
+        // Time: O(L) | Space: O(L) new nodes worst-case
+        public void insert(String word) {
+            Node cur = root;
+            for (int i = 0; i < word.length(); i++) {
+                int idx = word.charAt(i) - 'a';
+                if (cur.next[idx] == null) cur.next[idx] = new Node();
+                cur = cur.next[idx];
+            }
+            cur.end = true;
+        }
+
+        // Time: O(L) | Space: O(1)
+        public boolean search(String word) {
+            Node node = walk(word);
+            return node != null && node.end;
+        }
+
+        // Time: O(L) | Space: O(1)
+        public boolean startsWith(String prefix) {
+            return walk(prefix) != null;
+        }
+
+        private Node walk(String s) {
+            Node cur = root;
+            for (int i = 0; i < s.length(); i++) {
+                int idx = s.charAt(i) - 'a';
+                if (idx < 0 || idx >= 26) return null; // basic guard
+                if (cur.next[idx] == null) return null;
+                cur = cur.next[idx];
+            }
+            return cur;
+        }
+
+        static class Node {
+            Node[] next = new Node[26];
+            boolean end;
+        }
+    }
+
+    // Brute: store list; search by checking each word with pattern
+    static class WordDictionaryBrute {
+        private final List<String> words = new ArrayList<>();
+
+        // Time: O(1) | Space: O(1) extra
+        public void addWord(String word) {
+            words.add(word);
+        }
+
+        // Time: O(N * L) | Space: O(1)
+        public boolean searchBrute(String pattern) {
+            for (String w : words) {
+                if (w.length() != pattern.length()) continue;
+                if (match(pattern, w)) return true;
+            }
+            return false;
+        }
+
+        private boolean match(String p, String w) {
+            for (int i = 0; i < p.length(); i++) {
+                char pc = p.charAt(i);
+                if (pc != '.' && pc != w.charAt(i)) return false;
+            }
+            return true;
+        }
+    }
+
+    // Optimized: Trie + DFS for '.'
+    static class WordDictionary {
+        private final TrieNode root = new TrieNode();
+
+        // Time: O(L) | Space: O(L) new nodes
+        public void addWord(String word) {
+            TrieNode cur = root;
+            for (int i = 0; i < word.length(); i++) {
+                int idx = word.charAt(i) - 'a';
+                if (cur.next[idx] == null) cur.next[idx] = new TrieNode();
+                cur = cur.next[idx];
+            }
+            cur.end = true;
+        }
+
+        // Time: worst O(26^L) (with lots of '.') | Space: O(L) recursion
+        public boolean search(String word) {
+            return dfs(word, 0, root);
+        }
+
+        private boolean dfs(String w, int i, TrieNode node) {
+            if (node == null) return false;
+            if (i == w.length()) return node.end;
+
+            char c = w.charAt(i);
+            if (c == '.') {
+                for (int k = 0; k < 26; k++) {
+                    if (node.next[k] != null && dfs(w, i + 1, node.next[k])) return true;
+                }
+                return false;
+            } else {
+                return dfs(w, i + 1, node.next[c - 'a']);
+            }
+        }
+
+        static class TrieNode {
+            TrieNode[] next = new TrieNode[26];
+            boolean end;
+        }
+    }
+
+    // Optimized: Trie + one DFS over board
+    static class WS2TrieNode {
+        WS2TrieNode[] next = new WS2TrieNode[26];
+        String word; // store full word at terminal
+    }
+
+    static class DSU {
+        int[] parent, rank;
+        boolean[] blocked;
+
+        DSU(int n) {
+            parent = new int[n];
+            rank = new int[n];
+            blocked = new boolean[n];
+            for (int i = 0; i < n; i++) parent[i] = i;
+        }
+
+        void block(int x) {
+            blocked[x] = true;
+        }
+
+        int find(int x) {
+            while (parent[x] != x) {
+                parent[x] = parent[parent[x]];
+                x = parent[x];
+            }
+            return x;
+        }
+
+        boolean union(int a, int b) {
+            if (blocked[a] || blocked[b]) return false;
+            int ra = find(a), rb = find(b);
+            if (ra == rb) return false;
+            if (rank[ra] < rank[rb]) parent[ra] = rb;
+            else if (rank[ra] > rank[rb]) parent[rb] = ra;
+            else {
+                parent[rb] = ra;
+                rank[ra]++;
+            }
+            return true;
+        }
+    }
+
+    static class Node {
+        public int val;
+        public List<Node> neighbors;
+
+        public Node() {
+            val = 0;
+            neighbors = new ArrayList<>();
+        }
+
+        public Node(int _val) {
+            val = _val;
+            neighbors = new ArrayList<>();
+        }
+
+        public Node(int _val, ArrayList<Node> _neighbors) {
+            val = _val;
+            neighbors = _neighbors;
+        }
+    }
+
+    static class UF {
+        int[] p, r;
+
+        UF(int n) {
+            p = new int[n];
+            r = new int[n];
+            for (int i = 0; i < n; i++) p[i] = i;
+        }
+
+        int find(int x) {
+            while (p[x] != x) {
+                p[x] = p[p[x]];
+                x = p[x];
+            }
+            return x;
+        }
+
+        boolean union(int a, int b) {
+            int ra = find(a), rb = find(b);
+            if (ra == rb) return false;
+            if (r[ra] < r[rb]) p[ra] = rb;
+            else if (r[ra] > r[rb]) p[rb] = ra;
+            else {
+                p[rb] = ra;
+                r[ra]++;
+            }
+            return true;
+        }
     }
 }
 
