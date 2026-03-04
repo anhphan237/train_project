@@ -586,42 +586,90 @@ public class Main {
 
     // Time: O(n) | Space: O(1) (ASCII 128)
     public String minWindow(String s, String t) {
+
+        // nếu t rỗng thì không cần tìm gì
         if (t.isEmpty()) return "";
 
+        // need[c] = số lần ký tự c cần xuất hiện theo t
         int[] need = new int[128];
-        for (char c : t.toCharArray()) need[c]++;
+        for (char c : t.toCharArray()) {
+            need[c]++;
+        }
 
+        // required = số loại ký tự khác nhau trong t
+        // ví dụ t = "AABC" -> required = 3 (A,B,C)
         int required = 0;
-        for (int c = 0; c < 128; c++) if (need[c] > 0) required++;
+        for (int c = 0; c < 128; c++) {
+            if (need[c] > 0) required++;
+        }
 
+        // have[c] = số lần ký tự c xuất hiện trong window hiện tại
         int[] have = new int[128];
+
+        // formed = hiện tại đã có bao nhiêu loại ký tự đạt đủ số lượng
         int formed = 0;
 
+        // lưu độ dài window tốt nhất
         int bestLen = Integer.MAX_VALUE;
+
+        // lưu vị trí bắt đầu của window tốt nhất
         int bestL = 0;
 
+        // con trỏ trái của sliding window
         int left = 0;
+
+        // mở rộng window bằng right
         for (int right = 0; right < s.length(); right++) {
+
             char ch = s.charAt(right);
+
+            // thêm ký tự vào window
             have[ch]++;
 
-            if (need[ch] > 0 && have[ch] == need[ch]) formed++;
+            // nếu ký tự này cần trong t
+            // và số lượng trong window vừa đạt đúng yêu cầu
+            // thì ta đã hoàn thành thêm 1 loại ký tự
+            if (need[ch] > 0 && have[ch] == need[ch]) {
+                formed++;
+            }
 
+            // khi window đã chứa đủ tất cả ký tự cần thiết
             while (formed == required) {
+
+                // tính độ dài window hiện tại
                 int len = right - left + 1;
+
+                // cập nhật window nhỏ nhất
                 if (len < bestLen) {
                     bestLen = len;
                     bestL = left;
                 }
 
+                // chuẩn bị co window từ bên trái
                 char drop = s.charAt(left);
+
+                // giảm số lượng ký tự bên trái
                 have[drop]--;
-                if (need[drop] > 0 && have[drop] < need[drop]) formed--;
+
+                // nếu ký tự này là ký tự cần
+                // và sau khi bỏ đi thì số lượng bị thiếu
+                // thì window không còn hợp lệ nữa
+                if (need[drop] > 0 && have[drop] < need[drop]) {
+                    formed--;
+                }
+
+                // dịch left sang phải để co window
                 left++;
             }
         }
 
-        return bestLen == Integer.MAX_VALUE ? "" : s.substring(bestL, bestL + bestLen);
+        // nếu không tìm được window hợp lệ
+        if (bestLen == Integer.MAX_VALUE) {
+            return "";
+        }
+
+        // trả về substring nhỏ nhất đã tìm được
+        return s.substring(bestL, bestL + bestLen);
     }
 
     // ==========================================================
@@ -3166,6 +3214,10 @@ public class Main {
     // Subarray Sum Equals K (Brute Force)
     // ==========================================================
     // Time: O(n^2) | Space: O(1)
+    // ==========================================================
+    // Input: nums = [1,1,1], k = 2
+    // Output: 2
+    // ==========================================================
     public int subarraySumBrute(int[] nums, int k) {
         int n = nums.length;
         int count = 0;
