@@ -58,6 +58,11 @@ public class Main {
     // 2) Valid Anagram
     // ==========================================================
     // Time: O(n log n) | Space: O(n)
+    // ==========================================================
+    // Input: s = "racecar", t = "carrace"
+    //
+    // Output: true
+    // ==========================================================
     public boolean isAnagramBrute(String s, String t) {
         if (s == null || t == null || s.length() != t.length()) return false;
         char[] a = s.toCharArray();
@@ -352,7 +357,7 @@ public class Main {
     }
 
     // ==========================================================
-    // 9) Valid Palindrome
+    // 9) Valid Palindrome - chuổi kiểu hannah
     // ==========================================================
     // Time: O(n) | Space: O(n)
     public boolean isPalindromeBrute(String s) {
