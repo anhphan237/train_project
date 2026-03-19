@@ -127,7 +127,11 @@ public class Main {
             char[] a = s.toCharArray();
             Arrays.sort(a);
             String key = new String(a);
-            map.computeIfAbsent(key, x -> new ArrayList<>()).add(s);
+
+            if (!map.containsKey(key)) {
+                map.put(key, new ArrayList<>());
+            }
+            map.get(key).add(s);
         }
         return new ArrayList<>(map.values());
     }
@@ -148,7 +152,11 @@ public class Main {
             }
             String key = sb.toString();
 
-            map.computeIfAbsent(key, x -> new ArrayList<>()).add(s);
+            if (!map.containsKey(key)) {
+                map.put(key, new ArrayList<>());
+            }
+
+            map.get(key).add(s);
         }
         return new ArrayList<>(map.values());
     }
