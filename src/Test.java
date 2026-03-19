@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Test {
     public static void main(String[] args) {
@@ -72,7 +75,7 @@ public class Test {
         numIslandsDfs(grid, x, y - 1);
     }
 
-    // 13.2. Surrounded Regions
+    // 13.3. Surrounded Regions
     public void solve(char[][] board) {
         int m = board.length;
         int n = board[0].length;
@@ -117,6 +120,172 @@ public class Test {
         solveDfs(board, x, y + 1);
         solveDfs(board, x, y - 1);
     }
+
+    // 14. Backtracking
+    // 14.1. Permutations
+    // ==========================================================
+    // Cách 1 - dùng visited array
+    // ==========================================================
+    public List<List<Integer>> permuteC1(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        boolean[] used = new boolean[nums.length];
+
+        permuteBacktrack(nums, new ArrayList<>(), used, res);
+        return res;
+    }
+
+    void permuteBacktrack(int[] nums, List<Integer> path, boolean[] used, List<List<Integer>> res) {
+        // base case
+        if (path.size() == nums.length) {
+            res.add(new ArrayList<>(path)); // clone
+            return;
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i]) continue;
+
+            // chọn
+            path.add(nums[i]);
+            used[i] = true;
+
+            // đi tiếp
+            permuteBacktrack(nums, path, used, res);
+
+            // quay lui
+            path.remove(path.size() - 1);
+            used[i] = false;
+        }
+    }
+    // ==========================================================
+    // Cách 2 - swap
+    // ==========================================================
+    public List<List<Integer>> permuteC2(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        permuteBacktrack(nums, 0, res);
+        return res;
+    }
+
+    void permuteBacktrack(int[] nums, int start, List<List<Integer>> res) {
+        if (start == nums.length) {
+            List<Integer> temp = new ArrayList<>();
+            for (int n : nums) temp.add(n);
+            res.add(temp);
+            return;
+        }
+
+        for (int i = start; i < nums.length; i++) {
+            swap(nums, start, i);
+
+            permuteBacktrack(nums, start + 1, res);
+
+            swap(nums, start, i); // backtrack
+        }
+    }
+
+    void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+
+    // 14.2. Subsets
+    // ==========================================================
+    // Cách 1 - Backtracking
+    // ==========================================================
+    public List<List<Integer>> subsetsC1(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        subsetsBacktrack(nums, 0, new ArrayList<>(), res);
+        return res;
+    }
+
+    void subsetsBacktrack(int[] nums, int start, List<Integer> path, List<List<Integer>> res) {
+        // luôn add (khác permutations)
+        res.add(new ArrayList<>(path));
+
+        for (int i = start; i < nums.length; i++) {
+            // chọn
+            path.add(nums[i]);
+
+            // đi tiếp (i + 1 để tránh quay lại phần tử cũ)
+            subsetsBacktrack(nums, i + 1, path, res);
+
+            // backtrack
+            path.remove(path.size() - 1);
+        }
+    }
+    // ==========================================================
+    // Cách 2 - Bitmask
+    // ==========================================================
+    public List<List<Integer>> subsetsC2(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        int n = nums.length;
+
+        for (int mask = 0; mask < (1 << n); mask++) {
+            List<Integer> subset = new ArrayList<>();
+
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) != 0) {
+                    subset.add(nums[i]);
+                }
+            }
+
+            res.add(subset);
+        }
+
+        return res;
+    }
+
+    // 14.3. N-Queens
+    List<List<String>> res = new ArrayList<>();
+
+    public List<List<String>> solveNQueens(int n) {
+        boolean[] col = new boolean[n];
+        boolean[] diag1 = new boolean[2 * n]; // row - col + n
+        boolean[] diag2 = new boolean[2 * n]; // row + col
+
+        char[][] board = new char[n][n];
+        for (char[] row : board) Arrays.fill(row, '.');
+
+        solveNQueensBacktrack(0, n, board, col, diag1, diag2);
+        return res;
+    }
+
+    void solveNQueensBacktrack(int row, int n, char[][] board,
+                   boolean[] col, boolean[] diag1, boolean[] diag2) {
+
+        // base case
+        if (row == n) {
+            res.add(build(board));
+            return;
+        }
+
+        for (int c = 0; c < n; c++) {
+
+            int d1 = row - c + n;
+            int d2 = row + c;
+
+            if (col[c] || diag1[d1] || diag2[d2]) continue;
+
+            // đặt queen
+            board[row][c] = 'Q';
+            col[c] = diag1[d1] = diag2[d2] = true;
+
+            solveNQueensBacktrack(row + 1, n, board, col, diag1, diag2);
+
+            // backtrack
+            board[row][c] = '.';
+            col[c] = diag1[d1] = diag2[d2] = false;
+        }
+    }
+
+    List<String> build(char[][] board) {
+        List<String> list = new ArrayList<>();
+        for (char[] row : board) {
+            list.add(new String(row));
+        }
+        return list;
+    }
+
 }
 
 
