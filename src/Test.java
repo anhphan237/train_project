@@ -79,13 +79,13 @@ public class Test {
 
         // 1. duyệt biên
         for (int i = 0; i < m; i++) {
-            dfs(board, i, 0);
-            dfs(board, i, n - 1);
+            solveDfs(board, i, 0);
+            solveDfs(board, i, n - 1);
         }
 
         for (int j = 0; j < n; j++) {
-            dfs(board, 0, j);
-            dfs(board, m - 1, j);
+            solveDfs(board, 0, j);
+            solveDfs(board, m - 1, j);
         }
 
         // 2. xử lý kết quả
@@ -100,7 +100,7 @@ public class Test {
         }
     }
 
-    void dfs(char[][] board, int x, int y) {
+    void solveDfs(char[][] board, int x, int y) {
         int m = board.length;
         int n = board[0].length;
 
@@ -112,10 +112,10 @@ public class Test {
         board[x][y] = '#';
 
         // 4 hướng
-        dfs(board, x + 1, y);
-        dfs(board, x - 1, y);
-        dfs(board, x, y + 1);
-        dfs(board, x, y - 1);
+        solveDfs(board, x + 1, y);
+        solveDfs(board, x - 1, y);
+        solveDfs(board, x, y + 1);
+        solveDfs(board, x, y - 1);
     }
 }
 
