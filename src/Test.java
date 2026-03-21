@@ -286,6 +286,108 @@ public class Test {
         return list;
     }
 
+    // 15. Dynamic Programming
+    // 15.1. Climbing Stairs
+    public int climbStairs(int n) {
+        if (n <= 2) return n;
+
+        int a = 1, b = 2;
+        for (int i = 3; i <= n; i++) {
+            int c = a + b;
+            a = b;
+            b = c;
+        }
+        return b;
+    }
+
+    // 15.2. House Robber
+    public int rob(int[] nums) {
+        int prev2 = 0; // dp[i-2]
+        int prev1 = 0; // dp[i-1]
+
+        for (int num : nums) {
+            int cur = Math.max(prev1, prev2 + num);
+            prev2 = prev1;
+            prev1 = cur;
+        }
+
+        return prev1;
+    }
+
+    // 15.3. Coin Change
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, amount + 1);
+        dp[0] = 0;
+
+        for (int i = 1; i <= amount; i++) {
+            for (int coin : coins) {
+                if (i - coin >= 0) {
+                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+                }
+            }
+        }
+
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+
+    // 15.4. Longest Common Subsequence
+    public int longestCommonSubsequence(String text1, String text2) {
+        int m = text1.length(), n = text2.length();
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+
+    // 15.5. Longest Increasing Subsequence
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+
+        int res = 1;
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[j] < nums[i]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            res = Math.max(res, dp[i]);
+        }
+
+        return res;
+    }
+
+    // 15.6. Partition Equal Subset Sum
+    public boolean canPartition(int[] nums) {
+        int sum = 0;
+        for (int num : nums) sum += num;
+
+        if (sum % 2 != 0) return false;
+
+        int target = sum / 2;
+        boolean[] dp = new boolean[target + 1];
+        dp[0] = true;
+
+        for (int num : nums) {
+            for (int i = target; i >= num; i--) {
+                dp[i] = dp[i] || dp[i - num];
+            }
+        }
+
+        return dp[target];
+    }
 }
 
 
