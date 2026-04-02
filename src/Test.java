@@ -373,7 +373,6 @@ public class Test {
     public boolean canPartition(int[] nums) {
         int sum = 0;
         for (int num : nums) sum += num;
-
         if (sum % 2 != 0) return false;
 
         int target = sum / 2;
@@ -388,6 +387,87 @@ public class Test {
 
         return dp[target];
     }
+
+    // 1. Prefix Sum
+    // ==========================================================
+    // 303) Range Sum Query - Immutable
+    // ==========================================================
+    // Time:
+    // - Constructor: O(n)
+    // - sumRange: O(1)
+    // Space: O(n)
+    private int[] prefix;
+
+    public NumArray(int[] nums) {
+        prefix = new int[nums.length + 1];
+
+        for (int i = 0; i < nums.length; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+    }
+
+    public int sumRange(int left, int right) {
+        return prefix[right + 1] - prefix[left];
+    }
+
+
+    // ==========================================================
+    // 525) Contiguous Array
+    // ==========================================================
+    // Time: O(n)
+    // Space: O(n)
+    public int findMaxLength(int[] nums) {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        int sum = 0;
+        int maxLen = 0;
+
+        map.put(0, -1); // VERY IMPORTANT
+
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 0) {
+                sum -= 1;
+            } else {
+                sum += 1;
+            }
+
+            if (map.containsKey(sum)) {
+                int prevIndex = map.get(sum);
+                maxLen = Math.max(maxLen, i - prevIndex);
+            } else {
+                map.put(sum, i);
+            }
+        }
+
+        return maxLen;
+    }
+
+    // ==========================================================
+    // 560) Subarray Sum Equals K
+    // ==========================================================
+    // Time: O(n)
+    // Space: O(n)
+    public int subarraySum(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        map.put(0, 1);
+
+        int sum = 0;
+        int count = 0;
+
+        for (int num : nums) {
+            sum += num;
+
+            if (map.containsKey(sum - k)) {
+                count += map.get(sum - k);
+            }
+
+            map.put(sum, map.getOrDefault(sum, 0) + 1);
+        }
+
+        return count;
+    }
+
 }
 
 
