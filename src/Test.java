@@ -396,18 +396,21 @@ public class Test {
     // - Constructor: O(n)
     // - sumRange: O(1)
     // Space: O(n)
-    private int[] prefix;
+    class NumArray {
 
-    public NumArray(int[] nums) {
-        prefix = new int[nums.length + 1];
+        private int[] prefix;
 
-        for (int i = 0; i < nums.length; i++) {
-            prefix[i + 1] = prefix[i] + nums[i];
+        public NumArray(int[] nums) {
+            prefix = new int[nums.length + 1];
+
+            for (int i = 0; i < nums.length; i++) {
+                prefix[i + 1] = prefix[i] + nums[i];
+            }
         }
-    }
 
-    public int sumRange(int left, int right) {
-        return prefix[right + 1] - prefix[left];
+        public int sumRange(int left, int right) {
+            return prefix[right + 1] - prefix[left];
+        }
     }
 
 
