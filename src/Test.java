@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Test {
     public static void main(String[] args) {
@@ -469,6 +467,71 @@ public class Test {
         }
 
         return count;
+    }
+
+    // ==========================================================
+    // 2 sums
+    // ==========================================================
+    public int[] twoSum(int[] numbers, int target) {
+        int left = 0;
+        int right = numbers.length - 1;
+
+        while (left < right) {
+            int sum = numbers[left] + numbers[right];
+
+            if (sum == target) {
+                return new int[]{left + 1, right + 1}; // 1-based index
+            } else if (sum < target) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        return new int[]{-1, -1};
+    }
+
+    // ==========================================================
+    // 10) 3Sum
+    // ==========================================================
+    // Time: O(n^2) | Space: O(1) extra (không tính sort + output)
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+
+        for (int i = 0; i < nums.length; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            int l = i + 1, r = nums.length - 1;
+            while (l < r) {
+                int sum = nums[i] + nums[l] + nums[r];
+                if (sum < 0) l++;
+                else if (sum > 0) r--;
+                else {
+                    res.add(Arrays.asList(nums[i], nums[l], nums[r]));
+                    l++;
+                    r--;
+                    while (l < r && nums[l] == nums[l - 1]) l++;
+                    while (l < r && nums[r] == nums[r + 1]) r--;
+                }
+            }
+        }
+        return res;
+    }
+
+    // ==========================================================
+    // 11) Container With Most Water
+    // ==========================================================
+    // Time: O(n) | Space: O(1)
+    public int maxArea(int[] height) {
+        int l = 0, r = height.length - 1;
+        int best = 0;
+        while (l < r) {
+            int area = Math.min(height[l], height[r]) * (r - l);
+            best = Math.max(best, area);
+            if (height[l] < height[r]) l++;
+            else r--;
+        }
+        return best;
     }
 
 }
