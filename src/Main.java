@@ -2366,7 +2366,32 @@ public class Main {
     // ==========================================================
     // 56) Maximum Product Subarray
     // ==========================================================
+    public int maxProduct(int[] nums) {
+        int maxProd = nums[0];
+        int minProd = nums[0];
+        int result = nums[0];
 
+        for (int i = 1; i < nums.length; i++) {
+            int current = nums[i];
+
+            int tempMax = Math.max(
+                    current,
+                    Math.max(maxProd * current, minProd * current)
+            );
+
+            int tempMin = Math.min(
+                    current,
+                    Math.min(maxProd * current, minProd * current)
+            );
+
+            maxProd = tempMax;
+            minProd = tempMin;
+
+            result = Math.max(result, maxProd);
+        }
+
+        return result;
+    }
     // ==========================================================
     // 61) Maximum Subarray
     // ==========================================================
