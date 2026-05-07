@@ -9,7 +9,7 @@ public class Main {
     // 0) Binary search
     // ==========================================================
     // Time: O(log n)
-    public int search(int[] nums, int target) {
+    public static int bSearch(int[] nums, int target) {
 
         int l = 0;
         int r = nums.length - 1;
@@ -503,6 +503,23 @@ public class Main {
             best = Math.max(best, p - min);
         }
         return best;
+    }
+
+    public int maxProfit2(int[] prices) {
+        int left = 0, right = 1, maxProfit = 0;
+
+        while  (right < prices.length) {
+            if (prices[right] > prices[left]) {
+                int profit = prices[right] - prices[left];
+                maxProfit = Math.max(maxProfit, profit);
+            } else {
+                left = right;
+            }
+
+            right++;
+        }
+
+        return maxProfit;
     }
 
     // ==========================================================
